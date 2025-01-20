@@ -3,16 +3,19 @@ class Product:
     def __init__(self, name: str, price: float, quantity: int):
         """Constructor for product attributes"""
         if not name or not isinstance(name, str):
-            raise Exception("Product name cannot be empty and must be string!")
-        if price < 0:
-            raise Exception ("Price must be positive!")
-        if quantity < 0 or not isinstance(quantity, int):
-            raise Exception("Quantity must be positive integer!")
-
+            raise ValueError("Product name cannot be empty and must be a string!")  # Korrekt: ValueError
+        if price <= 0:
+            raise ValueError("Price must be greater than 0!")
+        if quantity < 0:
+            raise ValueError("Quantity cannot be negative!")
         self.name = name
         self.price = price
         self.quantity = quantity
-        self.active = True
+
+    @property
+    def active(self):
+        """Returns True if the product is active (quantity > 0)"""
+        return self.quantity > 0
 
 
     def get_quantity(self: float):
