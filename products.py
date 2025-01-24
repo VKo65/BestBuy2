@@ -1,3 +1,4 @@
+import store
 class Product:
 
     def __init__(self, name: str, price: float, quantity: int):
@@ -28,7 +29,7 @@ class Product:
         """
         self.quantity -= quantity
         if quantity < 1:
-            deactivate()
+            self.deactivate()
         return
 
 
@@ -63,6 +64,40 @@ class Product:
                 if self.quantity == 0:
                     self.active = False
             return f"Total price is: {self.price * quantity}"
+
+
+class NonStockedProduct(Product):
+
+    def __init__(self, name: str, price: float):
+        super().__init__(name, price, quantity=100000)
+
+    @property
+    def quantity(self):
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, value):
+        # quantity wird auf den Default-Wert zurückgesetzt
+        self._quantity = 1000000
+
+    def show(self):
+        #super().show()
+        print(f"{self.name}, {self.price}, units in stock: \u221e")
+        """Function to print information of the object """
+
+
+
+class LimitedProduct(Product):
+    def __init__(self, name: str, price: float, quantity: int, maximum: int):
+        """Initialize LimitedProduct with maximum purchase limit"""
+        super().__init__(name, price, quantity)
+        self.maximum = maximum  # new attribute for maximum order amount
+
+    def show(self):
+        print(f"{self.name}, {self.price}, {self.quantity}, max. order: {self.maximum}")
+
+
+
 
 
 def main():

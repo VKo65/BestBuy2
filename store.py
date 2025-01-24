@@ -23,7 +23,7 @@ class Store:
 
     def get_all_products(self):
         """Generates a list of all available products"""
-        return [product for product in self.list_of_products if product.quantity > 0]
+        return [product for product in self.list_of_products if product.active == True]
 
     def order(self, shopping_list):
         """Function used in main, to order a created list (from user input).
@@ -31,6 +31,12 @@ class Store:
         Return the total price."""
         total_price = 0
         for product, quantity in shopping_list:
+            if hasattr(product, "maximum"):
+                if quantity > product.maximum:
+                    print(f"You can only order maximum {product.maximum}")
+                    return
+            else:
+                pass
             if product.quantity >= quantity:
                 total_price += product.price * quantity
                 product.quantity -= quantity  # Reduce Quantity

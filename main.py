@@ -3,11 +3,13 @@ import store
 
 """setup initial stock of inventory"""
 
-product_list = [ products.Product("MacBook Air M2", price=1450, quantity=100),
-                 products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
-                 products.Product("Google Pixel 7", price=500, quantity=250)
-               ]
-
+product_list = [products.Product("MacBook Air M2", price=1450, quantity=100),
+                        products.Product("Bose QuietComfort Earbuds", price=250, quantity=500),
+                        products.Product("Google Pixel 7", price=500, quantity=250),
+                        products.NonStockedProduct("Windows License", price=125),
+                        products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
+                        ]
+best_buy = store.Store(product_list)
 
 def start():
     """Displays the main menu of the store, processes user input
@@ -16,10 +18,14 @@ def start():
     - Returns the total number of products
     - Fulfills orders
     - Exits the program"""
-    best_buy = store.Store(product_list)
+
     print("\n  Store Menu \n  ----------\n1. List all products in store\n"
           "2. Show total amount in store\n3. Make an order\n4. Quit")
-    users_choice = int(input("Please choose a number: "))
+    try:
+        users_choice = int(input("Please choose a number: "))
+    except ValueError:
+        print("Please enter a number!")
+        return
     print(f"You chose option {users_choice}.")
     if users_choice > 4:
         raise Exception("Store Menu has only 4 choices!")
@@ -61,9 +67,10 @@ def start():
 
 
 def main():
+    start()
     """Starts the main Code and loop it until exit."""
     while start():
-        pass
+       start()
 
 if __name__ == "__main__":
     main()
