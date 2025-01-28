@@ -2,7 +2,9 @@ __pycache__/
 *.pyc
 Labor.py
 menu-and-result-example.txt
-
+saftymain24-01-25.py
+saftyproducts24-01-25.py
+saftystore24-01-25.py
 
 *.py[cod]
 *$py.class
