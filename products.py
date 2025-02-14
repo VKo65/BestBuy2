@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from itertools import product
 
 
 class Product:
@@ -6,23 +7,51 @@ class Product:
 
     def __init__(self, name: str, price: float, quantity: int):
         """Constructor for product attributes with type and value checks."""
-        if not isinstance(name, str):
-            raise TypeError("Product name must be a string.")
-        if not isinstance(price, (int, float)):
-            raise TypeError("Price must be a number (int or float).")
-        if not isinstance(quantity, int):
-            raise TypeError("Quantity must be an integer.")
-        if not name.strip():
-            raise ValueError("Product name cannot be empty.")
-        if price < 0:
-            raise ValueError("Price must be non-negative.")
-        if quantity < 0:
-            raise ValueError("Quantity must be non-negative.")
+        self._name = None
+        self._price = None
+        self._quantity = None
+        self.promotion = None
 
         self.name = name
         self.price = price
         self.quantity = quantity
-        self.promotion = None
+
+    @property
+    def name(self):
+        """returns the name"""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        """Set the name and should be not empty"""
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("The name can't be empty")
+        self._name = value
+
+    @property
+    def price(self):
+        """returns the price"""
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        """Set the price. It must be a positive value"""
+        if not isinstance(value, (int, float)) or value < 0:
+            raise ValueError("Price must be a positive number.")
+        self._price = value
+
+    @property
+    def quantity(self):
+        """Gibt die verfügbare Menge zurück"""
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, value):
+        """Set quantity and must be positive"""
+        if not isinstance(value, int) or value < 0:
+            raise ValueError("Quantity must be positive.")
+        self._quantity = value
+
 
 
     def set_promotion(self, promotion):
@@ -69,10 +98,13 @@ class Product:
         return
 
 
-    def show(self):
+    def show(self, product_number=None):
         """Function to print information of the object """
         promotion_info = f" | Promotion: {self.promotion.name}" if self.promotion else ""
-        print(f"{self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
+        if product_number is not None:  # Falls eine Nummer übergeben wurde
+            print(f"{product_number}. {self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
+        else:
+            print(f"{self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
 
 
     def buy(self, quantity: int) -> float:
@@ -107,15 +139,17 @@ class NonStockedProduct(Product):
 
     @quantity.setter
     def quantity(self, value):
-        # quantity wird auf den Default-Wert zurückgesetzt
+        # quantity set to Default-value
         self._quantity = 1000000
 
 
-    def show(self):
+    def show(self, product_number=None):
         #super().show()
         promotion_info = f" | Promotion: {self.promotion.name}" if self.promotion else ""
-        print(f"{self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
-
+        if product_number is not None:  # Falls eine Nummer übergeben wurde
+            print(f"{product_number}. {self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
+        else:
+            print(f"{self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
 
 
 class LimitedProduct(Product):
@@ -125,18 +159,34 @@ class LimitedProduct(Product):
         super().__init__(name, price, quantity)
         self.maximum = maximum  # new attribute for maximum order amount
 
+    @property
+    def maximum(self):
+        return self._maximum
 
-    def show(self):
+    @maximum.setter
+    def maximum(self, value):
+        if not isinstance(value, int) or value <= 0:
+            raise ValueError("Maximum must be a positive integer.")
+        self._maximum = value
+
+    def show(self, product_number=None):
         promotion_info = f" | Promotion: {self.promotion.name}" if self.promotion else ""
-        print(f"{self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
+        if product_number is not None:  # Falls eine Nummer übergeben wurde
+            print(f"{product_number}. {self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
+        else:
+            print(f"{self.name}, ${self.price:.2f}, Stock: {self.quantity}{promotion_info}")
 
-"""********************
+
+
+"""
+********************
 The following clases are not childs of Produkt
-*************************"""
+*************************
+"""
 
 class Promotion(ABC):
     """
-    Abstrakte Promotion-Klasse, die als Grundlage für spezifische Promotion-Typen dient.
+    Abstract Promotion-class, as basis for Promotion-Type.
     """
 
     def __init__(self, name: str):
@@ -146,11 +196,11 @@ class Promotion(ABC):
     @abstractmethod
     def apply_promotion(self, product, quantity: int) -> float:
         """
-        Abstrakte Methode, die die Promotion-Logik implementiert.
-        Muss von abgeleiteten Klassen überschrieben werden.
-        :param product: Das Produkt, auf das die Promotion angewendet wird.
-        :param quantity: Die Anzahl, die gekauft wird.
-        :return: Der berechnete Preis nach Anwendung der Promotion.
+        Abstract method that implements promotion logic.
+        Must be overridden by derived classes.
+        :param product: The product to which the promotion is applied.
+        :param quantity: The quantity that will be purchased.
+        :return: The calculated price after applying the promotion.
         """
         pass
 

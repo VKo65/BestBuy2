@@ -50,7 +50,7 @@ class SecondHalfPrice(Promotion):
 
     def apply_promotion(self, product, quantity: int) -> float:
         #print("Check the half price!")
-        full_price_items = quantity // 2
+        full_price_items = (quantity + 1) // 2
         half_price_items = quantity - full_price_items
         return full_price_items * product.price + half_price_items * (product.price / 2)
 

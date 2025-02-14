@@ -1,15 +1,28 @@
+from products import Product
+
+
 class Store:
     """Constructor for class Store. """
-    def __init__(self, product):
-        """Constructor for store attributes with type and value checks."""
-        if not isinstance(product, list):
-            raise TypeError("Product list must be a list.")
-        #if not all(isinstance(item, Product) for item in product):
-            #raise TypeError("All items in the product list must be instances of the Product class.")
-        if not product:
-            raise ValueError("Product list cannot be empty.")
+    def __init__(self, products):
+        self._list_of_products = None
+        self.list_of_products = products
 
-        self.list_of_products = product
+    @property
+    def list_of_products(self):
+        """Getter for products"""
+        return self._list_of_products
+
+    @list_of_products.setter
+    def list_of_products(self, value):
+        """Setter for Typ check"""
+        if not isinstance(value, list):
+            raise TypeError("Product list must be a list.")
+        if not value:
+            raise ValueError("Product list cannot be empty.")
+        for item in value:
+            if not isinstance(item, Product):
+                raise TypeError(f"Invalid item in list: {item} (Type: {type(item)})")
+        self._list_of_products = value
 
 
     def add_product(self, product):

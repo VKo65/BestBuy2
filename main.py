@@ -10,8 +10,11 @@ product_list = [ products.Product("MacBook Air M2", price=1450, quantity=100),
                  products.NonStockedProduct("Windows License", price=125),
                  products.LimitedProduct("Shipping", price=10, quantity=250, maximum=1)
                ]
+numbered_products = []
 
-# Create promotion catalog
+
+
+    # Create promotion catalog
 second_half_price = promotions.SecondHalfPrice("Second Half price!")
 third_one_free = promotions.ThirdOneFree("Third One Free!")
 thirty_percent = promotions.PercentDiscount("30% off!", percent=30)
@@ -43,38 +46,66 @@ def start():
     if users_choice > 4:
         raise Exception("Store Menu has only 4 choices!")
 
+
     elif users_choice == 1:
-        for product in product_list:
-            product.show()
+        print("\nProducts im store:")
+        numbered_products = []  # Make sure, that it is a empty list
+
+        for i, product in enumerate(product_list, start=1):
+            numbered_products.append((i, product))  #Tupel (number, product) save
+            product.show(product_number=i)
+
 
     elif users_choice == 2:
         print(f"Total quantity in store: {best_buy.get_total_quantity()}")
 
     elif users_choice == 3:
-        product_name = input("Please enter product name: ")
-        try:
-            product_quantity = int(input("Enter quantity: "))
-        except ValueError:
-            print("Quantity should be a whole number!")
-            return True
-        # Searching for product
-        chosen_product = None
-        for product in product_list:
-            if product.name == product_name:
-                chosen_product = product
-                break
-        if chosen_product is None:
-            print(f"Error: Product '{product_name}' not found!")
-            return True
-        try:
-            total_price = chosen_product.buy(product_quantity)
-            print(f"Order successful! Total price: ${total_price:.2f}")
-        except Exception as e:
-            print(f"Order failed: {e}")
+        print("\nProducts available for purchase:")
+        numbered_products = []  # Make sure, that it is a empty list
+
+        for i, product in enumerate(product_list, start=1):
+            numbered_products.append((i, product))  # Tupel (number, product) save
+            product.show(product_number=i)
+
+        shopping_list = []
+
+        while True:
+
+            try:
+                product_number_input = input("Please enter product number (or press Enter to finish): ")
+                if product_number_input == "":
+                    break
+                product_number = int(product_number_input)
+                product_quantity = int(input("Enter quantity: "))
+
+            except ValueError:
+                print("Product number and quantity should be whole numbers!")
+                continue
+
+
+            # Searching for product by number instead of name
+            chosen_product = next((p for num, p in numbered_products if num == product_number), None)
+            """for num, product in numbered_products:
+                if num == product_number:
+                    chosen_product = product
+                    break"""
+            if chosen_product is None:
+                print(f"Error: Product '{product_number}' not found!")
+                continue
+
+            shopping_list.append((chosen_product, product_quantity))
+            print(f"Added {product_quantity}x {chosen_product.name} to your shopping list.")
+
+
+            try:
+                total_price = chosen_product.buy(product_quantity)
+                print(f"Order successful! Total price: ${total_price:.2f}")
+            except Exception as e:
+                print(f"Order failed: {e}")
 
     elif users_choice == 4:
         print("Goodbye!")
-        return False
+        exit()
     return True
 
 
